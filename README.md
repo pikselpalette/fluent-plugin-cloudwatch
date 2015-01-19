@@ -54,7 +54,7 @@ Event:
 
   ```
 
-#### Parameter
+#### Parameters
 
 ###### instance_profile
 - Default is false
