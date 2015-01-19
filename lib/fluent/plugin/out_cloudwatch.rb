@@ -19,7 +19,7 @@ class Fluent::CloudWatchOutput < Fluent::BufferedOutput
     super
   end
 
-  def _client
+  def client
     if @instance_profile
       Fog::AWS::CloudWatch.new(:use_iam_profile => true, :region => @region)
     else
@@ -29,7 +29,6 @@ class Fluent::CloudWatchOutput < Fluent::BufferedOutput
 
   def start
     super
-    @client = _client
   end
 
   def shutdown
@@ -60,7 +59,7 @@ class Fluent::CloudWatchOutput < Fluent::BufferedOutput
   def post(metrics)
     retries = 0
     begin
-      @client.put_metric_data(metrics['Namespace'], [{
+      client.put_metric_data(metrics['Namespace'], [{
 	      "MetricName" => metrics["Metric"],
 	      "Value"      => metrics["Value"],
 	      "Unit"       => metrics["Unit"],
@@ -73,7 +72,6 @@ class Fluent::CloudWatchOutput < Fluent::BufferedOutput
         retries += 1
         log.warn "Could not push metrics to Cloudwatch, resetting connection and trying again. #{e.message}"
         sleep 2**retries
-        @client = _client
         retry
       end
       raise ConnectionFailure, "Could not push metrics to Cloudwatch after #{retries} retries. #{e.message}"
