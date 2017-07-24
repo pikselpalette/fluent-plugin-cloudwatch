@@ -77,4 +77,8 @@ class Fluent::CloudWatchOutput < Fluent::BufferedOutput
       raise ConnectionFailure, "Could not push metrics to Cloudwatch after #{retries} retries. #{e.message}"
     end
   end
+
+  def emit(tag, es, chain)
+    super(tag, es, chain)
+  end
 end
